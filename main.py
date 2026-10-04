@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.db.database import engine, Base
-from app.models import User
+from app.models import User, Protocol
 
 Base.metadata.create_all(bind=engine)
 
