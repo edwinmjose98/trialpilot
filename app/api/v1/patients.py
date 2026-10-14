@@ -4,6 +4,7 @@ from app.schemas.patient import PatientCreate, PatientResponse
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from typing import List
+from app.services import patient_service
 
 router = APIRouter()
 
@@ -14,6 +15,7 @@ def create_patient(patient: PatientCreate, db : Session = Depends(get_db)):
     db.add(db_patient)
     db.commit()
     db.refresh(db_patient)
+    patient_service.create_visit_schedule_for_patient(db_patient, db)
     return db_patient
 
 

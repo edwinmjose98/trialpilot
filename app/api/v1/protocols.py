@@ -16,7 +16,7 @@ def create_protocol(protocol: ProtocolCreate, db: Session = Depends(get_db)):
     return db_protocol
 
 @router.get("/", response_model=List[ProtocolResponse])
-def get_protocol(db: Session = Depends(get_db)):
+def get_protocols(db: Session = Depends(get_db)):
     protocols = db.query(Protocol).all()
     return protocols
 
