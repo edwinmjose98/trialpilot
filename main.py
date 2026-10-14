@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.db.database import engine, Base
 from app.models import User, Protocol, Patient, VisitDefinition, ProcedureDefinition, VisitSchedule, ChecklistItem
 from app.api.v1 import protocols
+from app.api.v1 import patients
 
 Base.metadata.create_all(bind=engine)
 
@@ -12,6 +13,8 @@ app = FastAPI(
 )
 
 app.include_router(protocols.router, prefix = "/api/v1/protocols", tags = ["protocols"])
+app.include_router(patients.router, prefix = "/api/v1/patients", tags = ["patients"])
+
 
 @app.get("/")
 def health_check():
