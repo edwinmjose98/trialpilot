@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.schemas.protocol import ProtocolCreate, ProtocolResponse
 from app.models.protocol import Protocol
+from app.models.alert import Alert
 from typing import List
+from app.services import alert_service
 
 router = APIRouter()
 
@@ -25,4 +27,7 @@ def get_protocol(id: int, db: Session = Depends(get_db)):
     protocol = db.query(Protocol).filter(Protocol.id == id).first()
     return protocol
 
-
+@router.post("/check-alerts")
+def trigger_alert_check(db: Session = Depends(get_db)):
+    alert_service.check_and_create_alert(db)
+    return {"message": "Alert check completed"}

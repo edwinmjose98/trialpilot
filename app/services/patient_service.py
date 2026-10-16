@@ -7,8 +7,7 @@ def create_visit_schedule_for_patient(patient,db):
 
     for visit_def in visit_definitions:
         scheduled_date = patient.enrollment_date + timedelta(days=visit_def.day_number)
-        visit_schedule = VisitSchedule(patient_id=patient.id,scheduled_date=scheduled_date, visit_definition_id = visit_def.id)
+        visit_schedule = VisitSchedule(patient_id=patient.id, scheduled_date=scheduled_date, visit_definition_id = visit_def.id)
         db.add(visit_schedule)
 
     db.commit()
-
