@@ -13,23 +13,31 @@ def check_and_create_alert(db):
         last_valid_date = visit_schedule.scheduled_date + timedelta(days=visit_def.window_after)
         print(f"Visit {visit_schedule.id}: scheduled={visit_schedule.scheduled_date}, last_valid={last_valid_date}, today={today}")
         if today > last_valid_date:
-            print(f"Creating OVERDUE alert for visit {visit_schedule.id}")
-            overdue_alert=Alert(
-            patient_id=visit_schedule.patient_id,
-            visit_schedule_id = visit_schedule.id,
-            alert_type=AlertType.VISIT_OVERDUE,
-            message="The patient has missed the window. Protocol deviation procedures should be initiated.",
-            is_resolved=False)
-            db.add(overdue_alert)
+            existing_alert=db.query(Alert).filter(Alert.visit_schedule_id==visit_schedule.id,
+                                                  Alert.alert_type==AlertType.VISIT_OVERDUE,
+                                                  Alert.is_resolved==False).first()
+            if not existing_alert:
+                print(f"Creating OVERDUE alert for visit {visit_schedule.id}")
+                overdue_alert=Alert(
+                patient_id=visit_schedule.patient_id,
+                visit_schedule_id = visit_schedule.id,
+                alert_type=AlertType.VISIT_OVERDUE,
+                message="The patient has missed the window. Protocol deviation procedures should be initiated.",
+                is_resolved=False)
+                db.add(overdue_alert)
             # VISIT_OVERDUE
         elif (last_valid_date - today).days <= 2:
-            window_closing_alert=Alert(
-            patient_id=visit_schedule.patient_id,
-            visit_schedule_id = visit_schedule.id,
-            alert_type=AlertType.WINDOW_CLOSING,
-            message="The window is closing. Please alert the patient.",
-            is_resolved=False)
-            db.add(window_closing_alert)
+            existing_alert=db.query(Alert).filter(Alert.visit_schedule_id==visit_schedule.id,
+                                                  Alert.alert_type==AlertType.WINDOW_CLOSING,
+                                                  Alert.is_resolved==False).first()
+            if not existing_alert:
+                window_closing_alert=Alert(
+                patient_id=visit_schedule.patient_id,
+                visit_schedule_id = visit_schedule.id,
+                alert_type=AlertType.WINDOW_CLOSING,
+                message="The window is closing. Please alert the patient.",
+                is_resolved=False)
+                db.add(window_closing_alert)
 
     db.commit()
     print("Committed to database")
