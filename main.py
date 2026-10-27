@@ -7,6 +7,7 @@ from app.api.v1 import visit_definitions
 from app.api.v1 import alerts
 from app.api.v1 import procedure_definitions
 from app.api.v1 import checklist_items
+from app.api.v1 import auth
 
 Base.metadata.create_all(bind=engine)
 
@@ -22,6 +23,7 @@ app.include_router(visit_definitions.router, prefix = "/api/v1/visitdefinitions"
 app.include_router(alerts.router, prefix = "/api/v1/alerts", tags=["alerts"])
 app.include_router(procedure_definitions.router, prefix = "/api/v1/procedure_definitions", tags=["procedure definitions"])
 app.include_router(checklist_items.router, prefix = "/api/v1/checklist_items", tags=["checklist items"])
+app.include_router(auth.router, prefix = "/api/v1/auth", tags=["authorization"])
 
 @app.get("/")
 def health_check():
