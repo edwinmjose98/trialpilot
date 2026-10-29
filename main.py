@@ -8,6 +8,7 @@ from app.api.v1 import alerts
 from app.api.v1 import procedure_definitions
 from app.api.v1 import checklist_items
 from app.api.v1 import auth
+from app.api.v1 import protocol_parser as protocol_parser_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -24,6 +25,7 @@ app.include_router(alerts.router, prefix = "/api/v1/alerts", tags=["alerts"])
 app.include_router(procedure_definitions.router, prefix = "/api/v1/procedure_definitions", tags=["procedure definitions"])
 app.include_router(checklist_items.router, prefix = "/api/v1/checklist_items", tags=["checklist items"])
 app.include_router(auth.router, prefix = "/api/v1/auth", tags=["authorization"])
+app.include_router(protocol_parser_router.router, prefix="/api/v1/protocols", tags=["protocol-parser"])
 
 @app.get("/")
 def health_check():
