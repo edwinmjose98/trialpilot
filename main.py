@@ -9,7 +9,7 @@ from app.api.v1 import procedure_definitions
 from app.api.v1 import checklist_items
 from app.api.v1 import auth
 from app.api.v1 import protocol_parser as protocol_parser_router
-
+from app.api.v1 import rag
 
 
 Base.metadata.create_all(bind=engine)
@@ -38,6 +38,7 @@ app.include_router(procedure_definitions.router, prefix = "/api/v1/procedure_def
 app.include_router(checklist_items.router, prefix = "/api/v1/checklist_items", tags=["checklist items"])
 app.include_router(auth.router, prefix = "/api/v1/auth", tags=["authorization"])
 app.include_router(protocol_parser_router.router, prefix="/api/v1/protocols", tags=["protocol-parser"])
+app.include_router(rag.router, prefix="/api/v1/protocols", tags=["rag"])
 
 @app.get("/")
 def health_check():

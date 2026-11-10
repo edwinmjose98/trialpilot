@@ -22,14 +22,14 @@ Respond in JSON with exactly these keys:
 """
 
 
-def extract_chunks(pdf_path: str, chunk_size: int =500) -> List[dict]:
+def extract_chunks(pdf_bytes: bytes, chunk_size: int =500) -> List[dict]:
     # open the PDF from the file path
     # create an empty string to collect text
     # loop over each page in the document
     # get the page's text and add it to your string
     # close the document
     # for now, print the length of the text and return an empty list
-    doc=fitz.open(pdf_path)
+    doc=fitz.open(stream=pdf_bytes, filetype="pdf")
     # full_text=""
     chunks=[]
     for page in doc:
@@ -54,8 +54,8 @@ def embed_text(text:str) -> List[float]:
     )
     return response.data[0].embedding
 
-def embed_protocol(protocol_id: int, pdf_path: str, db: Session) -> int:
-    chunks = extract_chunks(pdf_path=pdf_path)
+def embed_protocol(protocol_id: int, pdf_bytes: bytes, db: Session) -> int:
+    chunks = extract_chunks(pdf_bytes=pdf_bytes)
 
     db.execute(text("DELETE FROM protocol_chunks WHERE protocol_id = :pid"),
                {"pid": protocol_id})
@@ -142,17 +142,6 @@ def answer_question(protocol_id: int, question: str, db: Session, limit: int = 1
         "cited_pages": cited_pages,
         "retrieved_pages": retrieved_pages
     }
-
-if __name__ == "__main__":
-    db = SessionLocal()
-    try:
-        result = answer_question(1, "What haemoglobin level would exclude a patient?", db)
-        print(result["answer"])
-        print("found:", result["found"])
-        print("cited:", result["cited_pages"])
-        print("retrieved:", result["retrieved_pages"])
-    finally:
-        db.close()
 
 
     # extract_chunks("/Users/edwinmjose/Documents/crc_clinical_aid_protocol_docs/Prot_000 (2).pdf")

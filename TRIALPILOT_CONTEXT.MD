@@ -43,11 +43,19 @@ Decisions made while building rag_service.py:
   A local open-source model (embeddings + LLM) is the fallback if the protocol cannot be sent to OpenAI
 - Raw SQL must be wrapped in sqlalchemy text() (SQLAlchemy 2.x)
 
+- RAG endpoints working (2026-11-10), in app/api/v1/rag.py (routers live directly in app/api/v1/, no endpoints/ folder):
+  - POST /api/v1/protocols/{protocol_id}/embed — PDF upload → embed_protocol → {"message", "chunks_created"}. Re-embedding TJ301 gave 101 rows, no duplicates
+  - POST /api/v1/protocols/{protocol_id}/ask — body {"question"} (AskRequest in app/schemas/rag.py) → answer_question
+  - extract_chunks/embed_protocol now take pdf_bytes (uploaded file contents), not a file path
+- Auth switched from OAuth2PasswordBearer to HTTPBearer in app/core/security.py so Swagger's Authorize accepts a pasted token
+  (login stays JSON {email, password}; frontend unaffected; bad token still returns 401)
+- Swagger testing: /docs → POST /auth/login → copy access_token → Authorize → paste. Local test account: test@trialpilot.com / test123 (dev only)
+
 ## WHERE WE LEFT OFF — NEXT TASK
-rag_service.py: functions 1–4 and 6 done. Remaining:
-- Next: create app/api/v1/endpoints/rag.py with /embed and /ask (wrap embed_protocol and answer_question), protected by JWT like other endpoints, register in main.py
-- Then: parse_protocol(protocol_id, db) — retrieve relevant chunks, GPT-4o extracts structured visits/procedures, save to DB (overlaps with existing protocol_parser.py), then /parse endpoint
-- The __main__ block in rag_service.py is a manual test harness — don't leave embed_protocol in it (re-embeds and costs money)
+- rag_service.py: functions 1–4 and 6 done, plus /embed and /ask endpoints
+- Next: parse_protocol(protocol_id, db) — retrieve relevant chunks, GPT-4o extracts structured visits/procedures, save to DB (overlaps with existing protocol_parser.py), then /parse endpoint
+- Old commented-out drafts at the bottom of rag_service.py can be deleted
+- Embedding runs synchronously (~1–2 min, 101 OpenAI calls); consider batching inputs or a background job later
 
 Improvements to try after testing (one at a time, measure each):
 - Strip the repeated ~176-char page header ("Date: 16 May 2017 Ver.1.1 ... CONFIDENTIAL") from every chunk
