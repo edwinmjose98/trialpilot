@@ -10,12 +10,24 @@ from app.api.v1 import checklist_items
 from app.api.v1 import auth
 from app.api.v1 import protocol_parser as protocol_parser_router
 
+
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="TrialPilot",
     description="Clinical Trial Protocol Adherence System",
     version="0.1.0"
+)
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(protocols.router, prefix = "/api/v1/protocols", tags = ["protocols"])
